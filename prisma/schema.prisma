@@ -1,0 +1,293 @@
+// DevPulse - Independent Developer Community Platform Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  name              String
+  username          String    @unique
+  avatarUrl         String?
+  coverUrl          String?
+  bio               String?
+  district          String?
+  country           String?
+  skills            String?   @default("JavaScript, React, Node.js")
+  experienceLevel   String?   @default("Full Stack Developer")
+  learningGoals     String?
+  githubUrl         String?
+  portfolioUrl      String?
+  linkedinUrl       String?
+  twitterUrl        String?
+  role              String    @default("USER") // USER, MODERATOR, ADMIN
+  isVerified        Boolean   @default(true)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpires DateTime?
+  isSuspended       Boolean   @default(false)
+  isBanned          Boolean   @default(false)
+  suspensionReason  String?
+  isProfilePublic   Boolean   @default(true)
+  showEmail         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relationships
+  posts                 Post[]
+  projects              Project[]
+  comments              Comment[]
+  projectComments       ProjectComment[]
+  likes                 Like[]
+  projectLikes          ProjectLike[]
+  bookmarks             Bookmark[]
+  sentConnections       Connection[]     @relation("SentConnections")
+  receivedConnections   Connection[]     @relation("ReceivedConnections")
+  receivedNotifications Notification[]   @relation("ReceivedNotifications")
+  sentNotifications     Notification[]   @relation("SentNotifications")
+  sentMessages          Message[]        @relation("SentMessages")
+  receivedMessages      Message[]        @relation("ReceivedMessages")
+  reports               Report[]
+  auditLogs             AuditLog[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  title           String
+  summary         String
+  description     String
+  category        String   @default("Web Application")
+  techStack       String   @default("React, TypeScript, Next.js")
+  thumbnailUrl    String?
+  screenshots     String? // JSON array of strings
+  demoVideoUrl    String? // Video URL (mp4 or hosted video)
+  isVerticalVideo Boolean  @default(false) // If true, showcases in DevReels
+  liveDemoUrl     String?
+  repoUrl         String?
+  status          String   @default("COMPLETED") // COMPLETED, IN_PROGRESS, CONCEPT
+  viewsCount      Int      @default(0)
+  userId          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts     Post[]
+  likes     ProjectLike[]
+  comments  ProjectComment[]
+  bookmarks Bookmark[]
+
+  @@index([userId])
+  @@index([category])
+  @@index([isVerticalVideo])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  mediaUrl  String?
+  mediaType String? // image, video
+  postType  String   @default("GENERAL") // GENERAL, PROJECT_ANNOUNCEMENT, MILESTONE, HELP_WANTED
+  projectId String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  likes     Like[]
+  comments  Comment[]
+  bookmarks Bookmark[]
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+// Strictly ONE single reaction type: Like (YouTube-style)
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Enforces at most one Like per user per post at database level
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId])
+}
+
+// Strictly ONE single reaction type: Like for Projects and Project Videos
+model ProjectLike {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Enforces at most one Like per user per project at database level
+  @@unique([userId, projectId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([userId])
+}
+
+model ProjectComment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  projectId String?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, projectId])
+  @@index([userId])
+}
+
+model Connection {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     String   @default("PENDING") // PENDING, ACCEPTED, DECLINED, BLOCKED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  sender   User @relation("SentConnections", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedConnections", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  recipientId String
+  senderId    String?
+  type        String // POST_LIKE, PROJECT_LIKE, POST_COMMENT, PROJECT_COMMENT, CONNECTION_REQUEST, CONNECTION_ACCEPTED, SYSTEM
+  title       String
+  message     String
+  link        String?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  recipient User  @relation("ReceivedNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender    User? @relation("SentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId])
+  @@index([isRead])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId])
+  @@index([receiverId])
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  targetType String // POST, PROJECT, COMMENT, USER
+  targetId   String
+  reason     String
+  status     String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  createdAt  DateTime @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([targetType, targetId])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  type      String   @default("INFO") // INFO, WARNING, SUCCESS, EVENT
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String // SUSPEND_USER, BAN_USER, RESTORE_USER, DELETE_POST, DELETE_PROJECT, EDIT_CATEGORY, ROLE_CHANGE
+  target    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  icon        String?
+}
+
+model TechTag {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  category String? // Language, Frontend, Backend, Database, Cloud, AI
+}
