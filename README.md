@@ -268,6 +268,12 @@ node -e "const { PrismaClient } = require('@prisma/client'); const p = new Prism
 
 ## 9. Production Deployment Guide
 
+### GitHub Pages Compatibility
+
+GitHub Pages is not a suitable deployment target for the current application. It only serves static files, while DevPulse depends on a running Next.js server for its API route handlers, cookie-based authentication, Prisma database access, and media uploads. The upload endpoint writes files to the server filesystem, which also requires persistent storage. Do not enable Next.js static export or add an `index.html` as a workaround; that would leave these features unavailable.
+
+To keep the existing features, deploy to a Node.js host such as Railway, Render, or a VPS/container with persistent database and upload storage. For serverless hosting such as Vercel, use a managed database (for example PostgreSQL) and move uploaded media to object storage before deployment.
+
 ### Option A: Vercel (Recommended for Serverless)
 1. Push repository to GitHub or GitLab.
 2. Import project into Vercel.

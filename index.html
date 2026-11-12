@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="DevPulse is a community for independent developers to share projects, ideas, and progress."
+    />
+    <meta name="theme-color" content="#0a101b" />
+    <title>DevPulse - Build in good company</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #f3f6fc;
+        background: #0a101b;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --muted: #9aa8bd;
+        --border: #26364f;
+        --panel: #111b2b;
+        --accent: #8179ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 50% -20%, rgb(91 82 223 / 18%), transparent 55%),
+          #0a101b;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:focus-visible {
+        outline: 2px solid #a29cff;
+        outline-offset: 4px;
+      }
+
+      .site-header,
+      main,
+      footer {
+        width: min(1120px, calc(100% - 40px));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        display: flex;
+        min-height: 76px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgb(38 54 79 / 75%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid rgb(162 156 255 / 28%);
+        border-radius: 11px;
+        background: rgb(129 121 255 / 15%);
+        color: #b9b4ff;
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(16px, 3vw, 30px);
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .nav-links a:hover,
+      .text-link:hover {
+        color: #fff;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        background: #6b63f5;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 650;
+        transition:
+          background 160ms ease,
+          transform 160ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        background: #8179ff;
+      }
+
+      .button.secondary {
+        border-color: var(--border);
+        background: #141f31;
+        color: #e4e9f4;
+      }
+
+      .button.secondary:hover {
+        background: #1b2940;
+      }
+
+      .hero {
+        display: grid;
+        min-height: 440px;
+        align-content: center;
+        justify-items: center;
+        padding: 76px 0 68px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1px solid rgb(129 121 255 / 30%);
+        border-radius: 999px;
+        background: rgb(129 121 255 / 10%);
+        color: #c3c0ff;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .eyebrow::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #8179ff;
+        content: "";
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 24px 0 16px;
+        font-size: clamp(2.6rem, 7vw, 5rem);
+        letter-spacing: -0.065em;
+        line-height: 1.02;
+      }
+
+      h1 span {
+        color: #a29cff;
+      }
+
+      .hero-copy {
+        max-width: 620px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.12rem);
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .section-heading {
+        margin-bottom: 22px;
+      }
+
+      .section-heading h2 {
+        margin: 0 0 8px;
+        font-size: 1.4rem;
+        letter-spacing: -0.035em;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        padding-bottom: 72px;
+      }
+
+      .feature-card {
+        min-height: 190px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgb(20 31 49 / 92%), rgb(17 27 43 / 92%));
+      }
+
+      .feature-icon {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border: 1px solid rgb(129 121 255 / 22%);
+        border-radius: 12px;
+        background: rgb(129 121 255 / 11%);
+        color: #b9b4ff;
+        font-size: 1.1rem;
+      }
+
+      .feature-card h3 {
+        margin: 18px 0 7px;
+        font-size: 1rem;
+      }
+
+      .feature-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      .community-callout {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 64px;
+        padding: clamp(22px, 4vw, 34px);
+        border: 1px solid rgb(129 121 255 / 24%);
+        border-radius: 18px;
+        background:
+          radial-gradient(ellipse at 100% 0%, rgb(91 82 223 / 20%), transparent 52%),
+          var(--panel);
+      }
+
+      .community-callout h2 {
+        margin: 0 0 8px;
+        font-size: clamp(1.15rem, 3vw, 1.55rem);
+        letter-spacing: -0.035em;
+      }
+
+      .community-callout p {
+        max-width: 600px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      footer {
+        display: flex;
+        min-height: 76px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 700px) {
+        .site-header,
+        main,
+        footer {
+          width: min(100% - 32px, 560px);
+        }
+
+        .site-header {
+          min-height: 68px;
+        }
+
+        .nav-links {
+          gap: 14px;
+          font-size: 0.82rem;
+        }
+
+        .nav-links .nav-secondary {
+          display: none;
+        }
+
+        .nav-links .button {
+          min-height: 38px;
+          padding-inline: 12px;
+        }
+
+        .hero {
+          min-height: 400px;
+          padding-block: 66px 56px;
+        }
+
+        .feature-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding-bottom: 52px;
+        }
+
+        .feature-card {
+          min-height: auto;
+        }
+
+        .community-callout {
+          align-items: flex-start;
+          flex-direction: column;
+          margin-bottom: 48px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .brand {
+          gap: 7px;
+          font-size: 1rem;
+        }
+
+        .brand-mark {
+          width: 31px;
+          height: 31px;
+        }
+
+        .nav-links {
+          gap: 10px;
+        }
+
+        .hero-actions {
+          width: 100%;
+        }
+
+        .hero-actions .button {
+          flex: 1;
+        }
+
+        footer {
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: center;
+          padding-block: 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="DevPulse home">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span>DevPulse</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a class="nav-secondary" href="#community">Community</a>
+        <a class="nav-secondary" href="#showcase">Explore</a>
+        <a class="button" href="#community">Join the community</a>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero" aria-labelledby="hero-title">
+        <span class="eyebrow">A community built for independent developers</span>
+        <h1 id="hero-title">Build, share, and grow <span>together.</span></h1>
+        <p class="hero-copy">
+          A home for developers to showcase the things they make, discover fresh ideas, and connect
+          with people who love building software.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#showcase">Explore DevPulse</a>
+          <a class="button secondary" href="#community">See what you can do</a>
+        </div>
+      </section>
+
+      <section id="showcase" aria-labelledby="showcase-title">
+        <div class="section-heading">
+          <h2 id="showcase-title">A place for your next idea</h2>
+          <p>Discover projects, conversations, and developers in one welcoming space.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">+</span>
+            <h3>Showcase your work</h3>
+            <p>Share the projects you care about and give your ideas a home in the community.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">@</span>
+            <h3>Join the conversation</h3>
+            <p>Trade knowledge, celebrate progress, and learn alongside fellow developers.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">?</span>
+            <h3>Find your people</h3>
+            <p>Explore what others are building and connect around shared interests.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="community-callout" id="community" aria-labelledby="community-title">
+        <div>
+          <h2 id="community-title">Good things happen when developers connect.</h2>
+          <p>
+            DevPulse brings project showcases, developer discovery, community posts, and short-form
+            project reels together. This page is a standalone landing page and does not connect to
+            the application's database or account features.
+          </p>
+        </div>
+        <a class="button" href="#home">Back to top</a>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#home"><span>DevPulse</span></a>
+      <span>Made for people who love to build.</span>
+    </footer>
+  </body>
+</html>
